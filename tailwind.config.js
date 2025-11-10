@@ -1,10 +1,9 @@
-import type { Config } from "tailwindcss";
-
-export default {
-  darkMode: ["class"],
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  darkMode: "class",
   content: [
-  "./**/*.{js,jsx,ts,tsx,html}"
-],
+    "./**/*.{js,jsx,ts,tsx,html}"
+  ],
   theme: {
     extend: {
       borderRadius: {
