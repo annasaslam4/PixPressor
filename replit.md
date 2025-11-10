@@ -37,6 +37,14 @@ Preferred communication style: Simple, everyday language.
 - JSZip for bulk ZIP downloads
 - No server-side processing - all operations happen in the browser for privacy
 
+**PWA Support** (NEW):
+- Progressive Web App capabilities with service worker (`public/sw.js`)
+- Offline caching of static assets and processed images
+- Installable app experience on mobile and desktop
+- Install prompt component with dismissible UI
+- App manifest with icons and metadata
+- Works offline after first visit
+
 ### Backend Architecture
 
 **Server Framework**: Express.js with TypeScript
@@ -81,6 +89,11 @@ Preferred communication style: Simple, everyday language.
 - `file-saver`: Programmatic file downloads
 - `jszip`: Creating ZIP archives for bulk downloads
 - `react-compare-slider`: Before/after image comparison UI component
+
+**PWA Libraries**:
+- `vite-plugin-pwa`: PWA plugin for Vite (configured but using manual service worker)
+- `workbox-window`: Service worker lifecycle management
+- Custom service worker for offline caching and asset management
 
 **UI Libraries**:
 - Radix UI: Unstyled, accessible component primitives (30+ components)

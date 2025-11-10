@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { nanoid } from "nanoid";
 import { Header } from "@/components/Header";
 import { FileUploadZone } from "@/components/FileUploadZone";
@@ -6,6 +6,7 @@ import { ImagePreviewCard } from "@/components/ImagePreviewCard";
 import { CompressionControls } from "@/components/CompressionControls";
 import { ResizePresetSelector } from "@/components/ResizePresetSelector";
 import { FAQ } from "@/components/FAQ";
+import { InstallPrompt } from "@/components/InstallPrompt";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -33,6 +34,14 @@ export default function HomePage() {
   const [compressionPreset, setCompressionPreset] = useState<CompressionPreset>("auto");
   const [selectedResizePreset, setSelectedResizePreset] = useState<ResizePreset | null>(null);
   const { toast } = useToast();
+  
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch((error) => {
+        console.error("Service Worker registration failed:", error);
+      });
+    }
+  }, []);
   
   const handleFilesSelected = useCallback(async (files: File[]) => {
     const countValidation = validateFileCount(images.length, files.length);
@@ -280,6 +289,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
+      <InstallPrompt />
       
       <main>
         <section className="relative py-12 md:py-20 overflow-hidden">
