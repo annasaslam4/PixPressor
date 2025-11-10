@@ -1,4 +1,62 @@
+import { sql } from "drizzle-orm";
+import { pgTable, varchar, timestamp, integer, jsonb, index, text, boolean } from "drizzle-orm/pg-core";
 import { z } from "zod";
+
+// Session storage table for Replit Auth
+export const sessions = pgTable(
+  "sessions",
+  {
+    sid: varchar("sid").primaryKey(),
+    sess: jsonb("sess").notNull(),
+    expire: timestamp("expire").notNull(),
+  },
+  (table) => [index("IDX_session_expire").on(table.expire)],
+);
+
+// User storage table for Replit Auth
+export const users = pgTable("users", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: varchar("email").unique(),
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
+  profileImageUrl: varchar("profile_image_url"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Compression history table
+export const compressionHistory = pgTable("compression_history", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  originalFileName: text("original_file_name").notNull(),
+  originalSize: integer("original_size").notNull(),
+  compressedSize: integer("compressed_size").notNull(),
+  originalFormat: varchar("original_format").notNull(),
+  targetFormat: varchar("target_format"),
+  compressionRatio: integer("compression_ratio").notNull(),
+  preset: varchar("preset").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Saved compression presets table
+export const savedPresets = pgTable("saved_presets", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  name: varchar("name").notNull(),
+  compressionPreset: varchar("compression_preset").notNull(),
+  quality: integer("quality").notNull(),
+  maxSizeMB: integer("max_size_mb").notNull(),
+  resizePreset: varchar("resize_preset"),
+  isDefault: boolean("is_default").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type User = typeof users.$inferSelect;
+export type UpsertUser = typeof users.$inferInsert;
+export type CompressionHistory = typeof compressionHistory.$inferSelect;
+export type InsertCompressionHistory = typeof compressionHistory.$inferInsert;
+export type SavedPreset = typeof savedPresets.$inferSelect;
+export type InsertSavedPreset = typeof savedPresets.$inferInsert;
 
 export type ImageFormat = "jpeg" | "jpg" | "png" | "webp" | "heic" | "avif" | "bmp" | "svg" | "tiff";
 
